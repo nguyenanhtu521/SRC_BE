@@ -13,7 +13,7 @@ namespace SRC_Travel.Models
         public int BusTypeID { get; set; }
         [ForeignKey(nameof(RouteID))]
         public int RouteID { get; set; }
-        public string Timings { get; set; }
+        public string TiSmings { get; set; }
         public int SeatCount { get; set; } 
         public int AvailableSeats { get; set; }
         public string? Description { get; set; }
