@@ -60,7 +60,7 @@ namespace SRC_Travel.Controllers
             {
                 return BadRequest();
             }
-
+            route.ModifiedAt = DateTime.Now;
             _context.Entry(route).State = EntityState.Modified;
 
             try

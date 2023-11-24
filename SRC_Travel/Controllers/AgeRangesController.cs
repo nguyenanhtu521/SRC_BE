@@ -59,7 +59,7 @@ namespace SRC_Travel.Controllers
             {
                 return BadRequest();
             }
-
+            ageRange.ModifiedAt = DateTime.Now;
             _context.Entry(ageRange).State = EntityState.Modified;
 
             try

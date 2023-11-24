@@ -59,7 +59,7 @@ namespace SRC_Travel.Controllers
             {
                 return BadRequest();
             }
-
+            ticketCounter.ModifiedAt = DateTime.Now;
             _context.Entry(ticketCounter).State = EntityState.Modified;
 
             try
