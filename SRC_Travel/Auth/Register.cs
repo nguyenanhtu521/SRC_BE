@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SRC_Travel.Auth
 {
-    public class Register
+    public class Register // đây là model khi mà thằng client nó nhập vô 
     {
         [Required(ErrorMessage = "User Name is required")]
         public string? Username { get; set; }
@@ -22,7 +22,7 @@ namespace SRC_Travel.Auth
         public string ConfirmPassword { get; set; }
 
         [Required(ErrorMessage = "Ticket Counter ID is required")]
-        public int TicketCounterID { get; set; }
+        public int TicketCounterID { get; set; } // chỉ cần thằng này thôi 
         [Required(ErrorMessage = "EmployeeCode is required")]
         public string EmployeeCode { get; set; }
 
@@ -48,10 +48,10 @@ namespace SRC_Travel.Auth
         [Required(ErrorMessage = "Qualification is required")]
         public string Qualification { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        //public DateTime CreatedAt { get; set; } = DateTime.Now; // hai cai này không phải nhập mà update ngay trên db, hoặc sẽ set nó ở backend
 
-        public DateTime? ModifiedAt { get; set; }
+        //public DateTime? ModifiedAt { get; set; }
 
-        public virtual TicketCounter? TicketCounter { get; set; }
+        //public virtual TicketCounter? TicketCounter { get; set; }
     }
 }

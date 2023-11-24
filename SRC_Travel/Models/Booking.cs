@@ -22,6 +22,7 @@ namespace SRC_Travel.Models
         public DateTime ReservationTime { get; set; }
         [ForeignKey(nameof(CustomerID))]
         public int CustomerID { get; set; }
+        public string EmployeeID { get; set; }
         public decimal TotalAmount { get; set; }
         public string? Description { get; set; }
         [DataType(DataType.DateTime)]
@@ -29,6 +30,7 @@ namespace SRC_Travel.Models
         [DataType(DataType.DateTime)]
         public DateTime? ModifiedAt { get; set; }
 
+        public virtual Employee? Employee { get; set; }
         public virtual Customer? Customer { get; set; }
         public virtual BusStop? StartStop { get; set; }
         public virtual BusStop? EndStop { get; set; }

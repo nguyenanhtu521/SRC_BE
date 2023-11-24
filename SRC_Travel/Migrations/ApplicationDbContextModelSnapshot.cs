@@ -282,6 +282,10 @@ namespace SRC_Travel.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("EmployeeID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("EndStopID")
                         .HasColumnType("int");
 
@@ -306,6 +310,8 @@ namespace SRC_Travel.Migrations
                     b.HasIndex("BusID");
 
                     b.HasIndex("CustomerID");
+
+                    b.HasIndex("EmployeeID");
 
                     b.HasIndex("EndStopID");
 
@@ -743,6 +749,12 @@ namespace SRC_Travel.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SRC_Travel.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("SRC_Travel.Models.BusStop", "EndStop")
                         .WithMany()
                         .HasForeignKey("EndStopID")
@@ -758,6 +770,8 @@ namespace SRC_Travel.Migrations
                     b.Navigation("Bus");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Employee");
 
                     b.Navigation("EndStop");
 

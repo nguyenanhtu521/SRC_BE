@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SRC_Travel.Auth;
+using SRC_Travel.Data;
+using SRC_Travel.Models;
+using SRC_Travel.Models.EmployeeModels;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -13,6 +17,7 @@ namespace SRC_Travel.Controllers
     [ApiController]
     public class AuthenticateController : ControllerBase
     {
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
@@ -20,25 +25,27 @@ namespace SRC_Travel.Controllers
         public AuthenticateController(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration)
+            ApplicationDbContext context,
+        IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _context = context;
         }
 
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] Login model)
         {
-            var user = await _userManager.FindByNameAsync(model.Username);
+            var user = await _userManager.FindByNameAsync(model.Email);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
 
                 var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Name, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
@@ -56,6 +63,73 @@ namespace SRC_Travel.Controllers
                 });
             }
             return Unauthorized();
+        }
+
+
+        [HttpPost]
+        [Route("forgotPassword")]
+
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
+        {
+            try
+            {
+                //find user
+                var user = await _userManager.FindByEmailAsync(forgotPasswordModel.Email);
+                if (user != null)
+                {
+
+                    var newpassword = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    return Ok(newpassword);
+                }
+                else
+                {
+                    return BadRequest("Email doesn't exist!");
+                }
+            }catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+                return BadRequest(ex.ToString());
+            }
+
+        }
+        [HttpPost]
+        [Route("changePassword")]
+
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel changePasswordModel)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(changePasswordModel.Email); // neu sử dụng username  thì đổi lại 
+                if(user == null) {
+                    return BadRequest("Email doesn't exist!");
+                }
+                if (changePasswordModel.NewPassword != changePasswordModel.ConfirmPassword)
+                {
+                    return BadRequest("New password is not equal confirm password");
+                }
+
+               var reuslt  = await _userManager.ChangePasswordAsync(user, changePasswordModel.CurrentPassword,changePasswordModel.NewPassword);
+                if (reuslt != null)
+                {
+                   
+                    if (!user.EmailConfirmed) // chỉ chạy cho lần đầu tiên
+                    {
+
+                        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        await _userManager.ConfirmEmailAsync(user, token);
+                    }
+                    return Ok("Ok! Changed password is success!");
+                }
+                else
+                {
+                    return BadRequest("Had an error!");
+                }
+            }catch (Exception ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+                return BadRequest(ex.ToString());
+            }
+
         }
 
         [HttpPost]
@@ -81,17 +155,34 @@ namespace SRC_Travel.Controllers
 
         [HttpPost]
         [Route("register-admin")]
-        public async Task<IActionResult> RegisterAdmin([FromBody] Register model)
+        public async Task<IActionResult> RegisterAdmin([FromBody] Register model) // đây chỉ là api test thực phải là seed data
         {
+            //Todo tạo 1 bản sao cho ticket counter -> all( hoặc seed data luôn)
+
+
+            //nếu  mà ticket counter mà tạo thành công thì mới cho đi tiếp  nếu không return badrequest
+
+            
+            var ticketCounterForAdmin = await _context.TicketCounters.FirstOrDefaultAsync(x => x.TicketCounterID == model.TicketCounterID);
+
+            if (ticketCounterForAdmin != null)
+            {
+                return BadRequest("ticket counter doesn't exist");
+            }
+
             var userExists = await _userManager.FindByNameAsync(model.Username);
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            IdentityUser user = new()
+            Employee user = new() //phải là employee vì employee nó bao gồm cả IdentityUser (fname ,lname ,etc...)
             {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username
+                UserName = model.Username,
+                TicketCounter = ticketCounterForAdmin,
+                TicketCounterID = model.TicketCounterID,
+                ModifiedAt = DateTime.Now,
+                CreatedAt = DateTime.Now,
             };
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)

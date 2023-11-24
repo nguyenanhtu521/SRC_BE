@@ -48,6 +48,11 @@ namespace SRC_Travel.Data
                 .WithMany()
                 .HasForeignKey(b => b.EndStopID)
                 .OnDelete(DeleteBehavior.NoAction);
+            builder.Entity<Booking>()
+                .HasOne(b => b.Employee)
+                .WithMany()
+                .HasForeignKey(b => b.EmployeeID)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<RouteStop>()
                 .HasOne(rs => rs.BusStop)

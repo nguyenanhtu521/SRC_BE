@@ -12,8 +12,8 @@ using SRC_Travel.Data;
 namespace SRC_Travel.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231121044254_V0")]
-    partial class V0
+    [Migration("20231124093221_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -285,6 +285,10 @@ namespace SRC_Travel.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("EmployeeID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("EndStopID")
                         .HasColumnType("int");
 
@@ -309,6 +313,8 @@ namespace SRC_Travel.Migrations
                     b.HasIndex("BusID");
 
                     b.HasIndex("CustomerID");
+
+                    b.HasIndex("EmployeeID");
 
                     b.HasIndex("EndStopID");
 
@@ -746,6 +752,12 @@ namespace SRC_Travel.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("SRC_Travel.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("SRC_Travel.Models.BusStop", "EndStop")
                         .WithMany()
                         .HasForeignKey("EndStopID")
@@ -761,6 +773,8 @@ namespace SRC_Travel.Migrations
                     b.Navigation("Bus");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Employee");
 
                     b.Navigation("EndStop");
 

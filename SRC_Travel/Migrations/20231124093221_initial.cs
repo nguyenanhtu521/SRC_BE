@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SRC_Travel.Migrations
 {
     /// <inheritdoc />
-    public partial class V0 : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -300,51 +300,6 @@ namespace SRC_Travel.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Bookings",
-                columns: table => new
-                {
-                    BookingID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StartStopID = table.Column<int>(type: "int", nullable: false),
-                    EndStopID = table.Column<int>(type: "int", nullable: false),
-                    BusID = table.Column<int>(type: "int", nullable: false),
-                    SeatNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BookingDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ReservationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CustomerID = table.Column<int>(type: "int", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Bookings", x => x.BookingID);
-                    table.ForeignKey(
-                        name: "FK_Bookings_BusStops_EndStopID",
-                        column: x => x.EndStopID,
-                        principalTable: "BusStops",
-                        principalColumn: "BusStopID");
-                    table.ForeignKey(
-                        name: "FK_Bookings_BusStops_StartStopID",
-                        column: x => x.StartStopID,
-                        principalTable: "BusStops",
-                        principalColumn: "BusStopID");
-                    table.ForeignKey(
-                        name: "FK_Bookings_Buses_BusID",
-                        column: x => x.BusID,
-                        principalTable: "Buses",
-                        principalColumn: "BusID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Bookings_Customers_CustomerID",
-                        column: x => x.CustomerID,
-                        principalTable: "Customers",
-                        principalColumn: "CustomerID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -430,6 +385,57 @@ namespace SRC_Travel.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Bookings",
+                columns: table => new
+                {
+                    BookingID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StartStopID = table.Column<int>(type: "int", nullable: false),
+                    EndStopID = table.Column<int>(type: "int", nullable: false),
+                    BusID = table.Column<int>(type: "int", nullable: false),
+                    SeatNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BookingDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReservationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CustomerID = table.Column<int>(type: "int", nullable: false),
+                    EmployeeID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookings", x => x.BookingID);
+                    table.ForeignKey(
+                        name: "FK_Bookings_AspNetUsers_EmployeeID",
+                        column: x => x.EmployeeID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Bookings_BusStops_EndStopID",
+                        column: x => x.EndStopID,
+                        principalTable: "BusStops",
+                        principalColumn: "BusStopID");
+                    table.ForeignKey(
+                        name: "FK_Bookings_BusStops_StartStopID",
+                        column: x => x.StartStopID,
+                        principalTable: "BusStops",
+                        principalColumn: "BusStopID");
+                    table.ForeignKey(
+                        name: "FK_Bookings_Buses_BusID",
+                        column: x => x.BusID,
+                        principalTable: "Buses",
+                        principalColumn: "BusID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Customers_CustomerID",
+                        column: x => x.CustomerID,
+                        principalTable: "Customers",
+                        principalColumn: "CustomerID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BookingsHistories",
                 columns: table => new
                 {
@@ -507,6 +513,11 @@ namespace SRC_Travel.Migrations
                 name: "IX_Bookings_CustomerID",
                 table: "Bookings",
                 column: "CustomerID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_EmployeeID",
+                table: "Bookings",
+                column: "EmployeeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookings_EndStopID",
@@ -595,13 +606,10 @@ namespace SRC_Travel.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Bookings");
 
             migrationBuilder.DropTable(
-                name: "TicketCounters");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "BusStops");
@@ -611,6 +619,9 @@ namespace SRC_Travel.Migrations
 
             migrationBuilder.DropTable(
                 name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "TicketCounters");
 
             migrationBuilder.DropTable(
                 name: "BusTypes");

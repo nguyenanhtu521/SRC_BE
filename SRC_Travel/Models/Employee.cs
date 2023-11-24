@@ -13,11 +13,12 @@ namespace SRC_Travel.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int Age { get; set; }
-        public string Email { get; set; }
-        public string Phone { get; set; }
+        //public string Email { get; set; } // hai truong nay co roi nha
+        //public string Phone { get; set; }
         public string Address { get; set; }
         public string Qualification { get; set; }
         public string? Description { get; set; }
+
         [DataType(DataType.DateTime)]
         public DateTime? CreatedAt { get; set; } = DateTime.Now;
         [DataType(DataType.DateTime)]
